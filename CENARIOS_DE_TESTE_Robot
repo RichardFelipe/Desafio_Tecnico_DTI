@@ -1,0 +1,75 @@
+*** Settings ***
+Library           SeleniumLibrary
+
+*** Variables ***
+#Cadastro
+${Email}        pedro1@gmail.com
+${Nome}         Joao
+${lastname}     Silva
+${Senha}        142536
+${Dia}          20
+${Mes}          9 
+${Ano}          2002
+*** Keywords ***
+Cenário1: Cadastro de novo usuário com informações válidas
+    Dado que o usuário esteja na página "Automation Practice
+    Quando o usuário insere um email válido na seção "Create an account" e clica em "Create an account
+    Então a página deve redirecionar o usuário para a página "Minha Conta" e exibir uma mensagem de boas-vindas
+
+Cenário2: Login com email inválido
+    Dado que o usuário esteja na página "Automation Practice"
+    Quando o usuário insere um email inválido (por exemplo, "usuario@invalido") e uma senha qualquer
+    Então a página deve exibir uma mensagem de erro indicando que o email é inválido
+
+Cenário 3: Login com campo de senha vazio
+    Dado que o usuário esteja na página "Automation Practice"
+    Quando o usuário insere um email válido e deixa o campo de senha vazio
+    Então a página deve exibir uma mensagem de erro informando que a senha é obrigatória
+
+
+*** Test Cases ***
+Dado que o usuário esteja na página "Automation Practice
+    Open Browser    url=http://automationpractice.pl/index.php?controller=authentication&back=my-%20account  browser=Chrome
+    Maximize Browser Window
+
+Quando o usuário insere um email válido na seção "Create an account" e clica em "Create an account e preenche todos os dados
+    Input Text  id:email_create     ${Email} 
+    Click element  id:SubmitCreate
+    Wait Until Element Is Visible   id:id_gender1
+    Click element  id:id_gender1
+    Input Text  id:customer_firstname   ${Nome} 
+    Input Text  id:customer_lastname    ${lastname}
+    input Text  id:passwd               ${Senha}
+    Select From List By Value    id=days    ${Dia}
+    Select From List By Value    id=months  ${Mes}  
+    Select From List By Value    id=years   ${Ano}
+    Click element   id=submitAccount
+
+Então a página deve redirecionar o usuário para a página "Minha Conta" e exibir uma mensagem de boas-vindas
+    Wait Until Page Contains Element    xpath=/html/body[@id='my-account']/div[@id='page']/div[@class='columns-container']/div[@id='columns']/div[@class='row'][2]/div[@id='center_column']/p[@class='alert alert-success']
+    Element Should Be Visible    xpath=/html/body[@id='my-account']/div[@id='page']/div[@class='columns-container']/div[@id='columns']/div[@class='row'][2]/div[@id='center_column']/p[@class='alert alert-success']    O teste passou! A mensagem de sucesso foi exibida.
+
+
+Dado que o usuário esteja na página "Automation Practice"
+    Open Browser    url=http://automationpractice.pl/index.php?controller=authentication&back=my-%20account  browser=Chrome
+    Maximize Browser Window
+
+Quando o usuário insere um email inválido (por exemplo, "usuario@invalido") e uma senha qualquer
+    Input Text  id=email     usuario@invalido.com
+    input Text  id=passwd    123456789
+    Click element  id=SubmitLogin
+
+Então a página deve exibir uma mensagem de erro indicando que o email é inválido
+    Wait Until Page Contains Element    xpath=/html/body[@id='authentication']/div[@id='page']/div[@class='columns-container']/div[@id='columns']/div[@class='row'][2]/div[@id='center_column']/div[@class='alert alert-danger']
+    Element Should Be Visible    xpath=/html/body[@id='authentication']/div[@id='page']/div[@class='columns-container']/div[@id='columns']/div[@class='row'][2]/div[@id='center_column']/div[@class='alert alert-danger']/ol/li    O teste passou! A mensagem de erro foi exibida.
+Dado que o usuário esteja na página "Automation Practice"
+    Open Browser    url=http://automationpractice.pl/index.php?controller=authentication&back=my-%20account  browser=Chrome
+    Maximize Browser Window
+
+Quando o usuário insere um email válido e deixa o campo de senha vazio
+    input Text  id=email     Joao505@gmail.com
+    Click element  id=SubmitLogin
+Então a página deve exibir uma mensagem de erro informando que a senha é obrigatória
+   Wait Until Page Contains Element    xpath=//div[@class='alert alert-danger']/ol/li
+    Element Text Should Be    xpath=//div[@class='alert alert-danger']/ol/li    Password is required.
+    [Teardown]    Close Browser

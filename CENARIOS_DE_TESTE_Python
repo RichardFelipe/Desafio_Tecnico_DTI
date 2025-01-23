@@ -1,0 +1,121 @@
+import unittest
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import Select
+
+class AutomationPracticeTests(unittest.TestCase):
+
+    def setUp(self):
+        # Configuração do driver do navegador
+        self.driver = webdriver.Chrome()
+        self.driver.maximize_window()
+        self.driver.get("http://automationpractice.pl/index.php?controller=authentication&back=my-account")
+        print("Navegador iniciado e página carregada.")
+
+    def tearDown(self):
+        # Finaliza o driver do navegador
+        self.driver.quit()
+        print("Navegador fechado.")
+
+    def test_cadastro_novo_usuario(self):
+        driver = self.driver
+
+        try:
+            # Cenário 1: Cadastro de novo usuário com informações válidas
+            self.cadastro_usuario(driver, "pedro11@gmail.com", "Joao", "Silva", "142536", "20", "9", "2002")
+            self.assertTrue(self.verificar_mensagem_sucesso(driver), "A mensagem de sucesso não foi exibida.")
+            print("Teste de cadastro de novo usuário: PASSOU")
+        
+        except Exception as e:
+            driver.save_screenshot('cadastro_novo_usuario.png')
+            print(f"Teste de cadastro de novo usuário: FALHOU - {str(e)}")
+            self.fail("Teste de cadastro de novo usuário falhou")
+
+    def test_login_email_invalido(self):
+        driver = self.driver
+
+        try:
+            # Cenário 2: Login com email inválido
+            self.login(driver, "usuario@invalido.com", "123456789")
+            self.assertTrue(self.verificar_mensagem_erro(driver), "A mensagem de erro não foi exibida.")
+            print("Teste de login com email inválido: PASSOU")
+        
+        except Exception as e:
+            driver.save_screenshot('login_email_invalido.png')
+            print(f"Teste de login com email inválido: FALHOU - {str(e)}")
+            self.fail("Teste de login com email inválido falhou")
+
+    def test_login_senha_vazia(self):
+        driver = self.driver
+
+        try:
+            # Cenário 3: Login com campo de senha vazio
+            self.login(driver, "Joao505@gmail.com", "")
+            self.assertTrue(self.verificar_mensagem_erro_senha(driver), "A mensagem de erro de senha não foi exibida.")
+            print("Teste de login com campo de senha vazio: PASSOU")
+        
+        except Exception as e:
+            driver.save_screenshot('login_senha_vazia.png')
+            print(f"Teste de login com campo de senha vazio: FALHOU - {str(e)}")
+            self.fail("Teste de login com campo de senha vazio falhou")
+
+    def cadastro_usuario(self, driver, email, nome, sobrenome, senha, dia, mes, ano):
+        # Preenche o formulário de cadastro de novo usuário
+        driver.find_element(By.ID, "email_create").send_keys(email)
+        driver.find_element(By.ID, "SubmitCreate").click()
+        
+        WebDriverWait(driver, 10).until(
+            EC.visibility_of_element_located((By.ID, "id_gender1"))
+        ).click()
+        
+        driver.find_element(By.ID, "customer_firstname").send_keys(nome)
+        driver.find_element(By.ID, "customer_lastname").send_keys(sobrenome)
+        driver.find_element(By.ID, "passwd").send_keys(senha)
+        
+        Select(driver.find_element(By.ID, "days")).select_by_value(dia)
+        Select(driver.find_element(By.ID, "months")).select_by_value(mes)
+        Select(driver.find_element(By.ID, "years")).select_by_value(ano)
+        
+        driver.find_element(By.ID, "submitAccount").click()
+
+    def login(self, driver, email, senha):
+        # Preenche o formulário de login
+        driver.find_element(By.ID, "email").send_keys(email)
+        driver.find_element(By.ID, "passwd").send_keys(senha)
+        driver.find_element(By.ID, "SubmitLogin").click()
+
+    def verificar_mensagem_sucesso(self, driver):
+        # Verifica a presença da mensagem de sucesso após cadastro
+        try:
+            WebDriverWait(driver, 10).until(
+                EC.visibility_of_element_located((By.XPATH, "//p[@class='info-account']"))
+            )
+            return True
+        except:
+            return False
+
+    def verificar_mensagem_erro(self, driver):
+        # Verifica a presença da mensagem de erro após login com email inválido
+        try:
+            WebDriverWait(driver, 10).until(
+                EC.visibility_of_element_located((By.XPATH, "//div[@class='alert alert-danger']"))
+            )
+            return True
+        except:
+            return False
+    
+    def verificar_mensagem_erro_senha(self, driver):
+        # Verifica a presença da mensagem de erro de senha após login com campo de senha vazio
+        try:
+            WebDriverWait(driver, 10).until(
+                EC.visibility_of_element_located((By.XPATH, "//div[@class='alert alert-danger']/ol/li"))
+            )
+            error_message = driver.find_element(By.XPATH, "//div[@class='alert alert-danger']/ol/li").text
+            return error_message == "Password is required."
+        except:
+            return False
+
+if __name__ == "__main__":
+    unittest.main()
