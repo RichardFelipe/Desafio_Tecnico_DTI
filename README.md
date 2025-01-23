@@ -3,10 +3,15 @@
 Este repositório contém um conjunto de testes automatizados escritos em Python, utilizando o framework Selenium para validar funcionalidades de um sistema web.
 
 # Cenários de Teste
+
 Cenário 1: Cadastro de novo usuário com informações válidas
+
 Dado que o usuário esteja na página "Automation Practice"
+
 Quando o usuário insere um email válido na seção "Create an account" e clica em "Create an account"
+
 Então a página deve redirecionar o usuário para a página "Minha Conta" e exibir uma mensagem de boas-vindas
+
 
 
 Cenário 2: Login com email inválido
