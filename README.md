@@ -28,12 +28,12 @@ Os testes podem ser executados individualmente ou em conjunto, usando o módulo 
 **Cadastro de Novo Usuário**  
 python -m unittest test_cadastro_novo_usuario.py
 
-**Login com E-mail Inválido** 
+**Login com E-mail Inválido**   
 python -m unittest test_login_email_invalido.py
 
-**Login com Campo de Senha Vazio**
+**Login com Campo de Senha Vazio**  
 python -m unittest test_login_senha_vazia.py
 
-**Executando Todos os Testes**
+**Executando Todos os Testes**  
 Para executar todos os testes de uma vez, utilize o comando:
 python -m unittest discover
