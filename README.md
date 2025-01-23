@@ -35,5 +35,5 @@ python -m unittest test_login_email_invalido.py
 python -m unittest test_login_senha_vazia.py
 
 **Executando Todos os Testes**  
-Para executar todos os testes de uma vez, utilize o comando:
+Para executar todos os testes de uma vez, utilize o comando:  
 python -m unittest discover
